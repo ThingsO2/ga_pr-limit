@@ -21,18 +21,17 @@ function getClient() {
 }
 
 async function takeActions(prId: string) {
-    const MAX_PRS = core.getInput("MAX_PRS");
-    const message = `You reached the limit of ${MAX_PRS} PRS`
-    
+    const message = `You have reached the limit of PR open per project`
+
     // adding comment + closing PR
     await getClient().graphql(`
         mutation($id: ID!, $body: String!) {
             closePullRequest(input: { pullRequestId: $id}) {
                 pullRequest {
                     url
-                } 
+                }
             }
-            
+
             addComment(input: { body: $body, subjectId: $id}) {
                 clientMutationId
             }
@@ -45,7 +44,7 @@ async function takeActions(prId: string) {
     // exist and make the action fail
     core.setFailed(message);
     process.exit(1);
-} 
+}
 
 async function reachedLimitPRs(actor: string) {
     const { context } = github;
@@ -77,7 +76,7 @@ interface PullRequestIdQuery {
 }
 async function getPRInfo() {
     const { context } = github;
-    
+
     const data: PullRequestIdQuery = await getClient().graphql(`
         query($name: String!, $owner: String!, $issue: Int!) {
             repository(name: $name, owner: $owner) {
@@ -111,7 +110,7 @@ async function getPRInfo() {
 
 function assertIsIssue() {
     const { context } = github;
-    
+
     if (!context.issue.number) {
         core.setFailed(`no issue found, please map action to [opened, reopened] types`);
         process.exit(1);

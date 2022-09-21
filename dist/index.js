@@ -8350,17 +8350,16 @@ function getClient() {
 }
 function takeActions(prId) {
     return __awaiter(this, void 0, void 0, function* () {
-        const MAX_PRS = core.getInput("MAX_PRS");
-        const message = `You reached the limit of ${MAX_PRS} PRS`;
+        const message = `You have reached the limit of PR open per project`;
         // adding comment + closing PR
         yield getClient().graphql(`
         mutation($id: ID!, $body: String!) {
             closePullRequest(input: { pullRequestId: $id}) {
                 pullRequest {
                     url
-                } 
+                }
             }
-            
+
             addComment(input: { body: $body, subjectId: $id}) {
                 clientMutationId
             }
